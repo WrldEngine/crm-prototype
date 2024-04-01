@@ -32,21 +32,22 @@ async def create_client(
     try:
         client = await clients_service.create(client)
 
-        _verification_token = create_verification_token({"email": client.email})
-        _verification_link = f"{request.base_url}clients/verify/{_verification_token}"
-
-        email_send_verification_link.delay(
-            client.username,
-            _verification_link,
-            client.email,
-        )
-
-        return client
-
     except IntegrityError as err:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="This username or email already exists",
         )
+
+    _verification_token = create_verification_token({"email": client.email})
+    _verification_link = f"{request.base_url}clients/verify/{_verification_token}"
+
+    email_send_verification_link.delay(
+        client.username,
+        _verification_link,
+        client.email,
+    )
+
+    return client
 
 
 @router.post("/login", response_model=Token)

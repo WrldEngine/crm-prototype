@@ -27,9 +27,10 @@ async def create_task(
 async def create_task(
     current_staff: Annotated[Staff, Depends(get_current_staff)],
     tasks_service: Annotated[TasksService, Depends(tasks_service)],
-) -> TaskShowModel:
+) -> List[TaskShowModel]:
+    all_tasks = await tasks_service.get_all()
 
-    return await tasks_service.get_all()
+    return all_tasks
 
 
 @router.put("/{task_id}/edit", response_model=TaskUpdateModel)
@@ -52,8 +53,9 @@ async def edit_task(
     current_staff: Annotated[Staff, Depends(get_current_staff)],
     tasks_service: Annotated[TasksService, Depends(tasks_service)],
 ) -> TaskShowModel:
+    add_member = await tasks_service.add_member(task_id, staff_id)
 
-    return await tasks_service.add_member(task_id, staff_id)
+    return add_member
 
 
 @router.delete("/{task_id}/delete")

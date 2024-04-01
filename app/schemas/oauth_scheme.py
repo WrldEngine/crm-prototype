@@ -1,5 +1,4 @@
-from typing import Optional
-from .base_scheme import Base, OrmSchemeModel
+from .base_scheme import Base
 
 
 class Token(Base):
@@ -7,10 +6,10 @@ class Token(Base):
     token_type: str = "Bearer"
 
 
-class VerifyEmail(OrmSchemeModel):
+class VerifyEmail(Base):
     verification_token: str
     is_verified: bool = False
 
 
-class UpdateVerifiedEmail(OrmSchemeModel):
+class UpdateVerifiedEmail(Base):
     is_verified: bool

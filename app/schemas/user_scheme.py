@@ -1,6 +1,6 @@
 import re
 
-from .base_scheme import Base, OrmSchemeModel
+from .base_scheme import Base
 from app.models.enums import GenderStatus, Positions
 
 from pydantic import validator, EmailStr
@@ -12,7 +12,7 @@ USERNAME_LETTER_MATCH_PATTERN = re.compile(r"^[a-zA-Z]")
 MAX_PASSWORD_LENGTH = 3
 
 
-class ClientCreationModel(OrmSchemeModel):
+class ClientCreationModel(Base):
     username: str
     first_name: str
     last_name: str
@@ -62,7 +62,7 @@ class ClientAuthModel(Base):
     password: str
 
 
-class ClientViewModel(OrmSchemeModel):
+class ClientViewModel(Base):
     id: int
     username: str
     first_name: str
@@ -76,7 +76,7 @@ class StaffAuthModel(Base):
     password: str
 
 
-class StaffViewModel(OrmSchemeModel):
+class StaffViewModel(Base):
     id: int
     first_name: str
     last_name: str
@@ -85,7 +85,7 @@ class StaffViewModel(OrmSchemeModel):
     assigned_position: Positions
 
 
-class StaffCreationModel(OrmSchemeModel):
+class StaffCreationModel(Base):
     first_name: str
     last_name: str
     patronymic: str
@@ -114,7 +114,7 @@ class StaffCreationModel(OrmSchemeModel):
         return value
 
     @validator("patronymic")
-    def validate_surname(cls, value):
+    def validate_patronymic(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
