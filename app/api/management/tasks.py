@@ -24,7 +24,7 @@ async def create_task(
 
 
 @router.get("/all", response_model=List[TaskShowModel])
-async def create_task(
+async def all_tasks(
     current_staff: Annotated[Staff, Depends(get_current_staff)],
     tasks_service: Annotated[TasksService, Depends(tasks_service)],
 ) -> List[TaskShowModel]:
@@ -47,7 +47,7 @@ async def edit_task(
 
 @router.put("/{task_id}/add_member/{staff_id}", response_model=TaskShowModel)
 @isAdminOrCurator
-async def edit_task(
+async def add_member(
     task_id: int,
     staff_id: int,
     current_staff: Annotated[Staff, Depends(get_current_staff)],
