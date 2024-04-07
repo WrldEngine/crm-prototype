@@ -26,7 +26,7 @@ services:
   celery_beat:
     container_name: celery_beat
     build: .
-    command: poetry run celery -A celery_tasks.tasks beat --pool=solo --loglevel=info
+    command: poetry run celery -A celery_tasks.tasks beat --loglevel=info
     volumes:
       - .:/project
     depends_on:
