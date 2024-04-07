@@ -3,7 +3,7 @@ import re
 from .base_scheme import Base
 from app.models.enums import GenderStatus, Positions
 
-from pydantic import validator, EmailStr
+from pydantic import field_validator, EmailStr
 
 from fastapi import HTTPException, status
 
@@ -20,7 +20,7 @@ class ClientCreationModel(Base):
     gender: GenderStatus
     email: EmailStr
 
-    @validator("username")
+    @field_validator("username")
     def validate_username(cls, value):
         if not USERNAME_LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -29,7 +29,7 @@ class ClientCreationModel(Base):
             )
         return value
 
-    @validator("first_name")
+    @field_validator("first_name")
     def validate_name(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -38,7 +38,7 @@ class ClientCreationModel(Base):
             )
         return value
 
-    @validator("last_name")
+    @field_validator("last_name")
     def validate_surname(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -47,7 +47,7 @@ class ClientCreationModel(Base):
             )
         return value
 
-    @validator("password")
+    @field_validator("password")
     def validate_password(cls, value):
         if len(value) < MAX_PASSWORD_LENGTH:
             raise HTTPException(
@@ -95,7 +95,7 @@ class StaffCreationModel(Base):
     gender: GenderStatus
     password: str
 
-    @validator("first_name")
+    @field_validator("first_name")
     def validate_name(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -104,7 +104,7 @@ class StaffCreationModel(Base):
             )
         return value
 
-    @validator("last_name")
+    @field_validator("last_name")
     def validate_surname(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -113,7 +113,7 @@ class StaffCreationModel(Base):
             )
         return value
 
-    @validator("patronymic")
+    @field_validator("patronymic")
     def validate_patronymic(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -122,7 +122,7 @@ class StaffCreationModel(Base):
             )
         return value
 
-    @validator("password")
+    @field_validator("password")
     def validate_password(cls, value):
         if len(value) < MAX_PASSWORD_LENGTH:
             raise HTTPException(
