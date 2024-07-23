@@ -1,34 +1,57 @@
-version: '3'
+version: '3.11'
 services:
-  redis:
-    image: redis
+  postgres:
+    image: 'postgres:15-alpine'
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRES_USER: '${POSTGRES_USER}'
+      POSTGRES_DB: '${POSTGRES_DB}'
     ports:
-      - "6379:6379"
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      - 'postgres-data:/var/lib/postgresql/data'
   project:
     container_name: project
-    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: 'poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload'
     build: .
     volumes:
-      - .:/project
+      - '.:/project'
     ports:
-      - 8000:8000
+      - '8000:8000'
     depends_on:
       - redis
+      - postgres
   celery_tasks:
     container_name: celery_tasks
     build: .
     command: poetry run celery -A celery_tasks.tasks worker --pool=solo --loglevel=info
     volumes:
-      - .:/project
+      - '.:/project'
     depends_on:
       - redis
       - project
-  celery_beat:
-    container_name: celery_beat
-    build: .
-    command: poetry run celery -A celery_tasks.tasks beat --loglevel=info
+  redis:
+    image: 'redis:6-alpine'
+    restart: always
+    env_file: .env
+    command: redis-server
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    expose:
+      - '6379'
     volumes:
-      - .:/project
+      - 'redis-data:/data'
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - redis
       - project
+volumes:
+  postgres-data: null
+  redis-data: null
